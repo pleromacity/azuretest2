@@ -1,52 +1,777 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CityHub ISP Login</title>
   <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="login-container">
-    <h1>CityHub ISP Login</h1>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-    <!-- Tab Buttons -->
-    <div class="tab-buttons">
-      <button class="tab-btn active" data-target="customer-form">Customer</button>
-      <button class="tab-btn" data-target="admin-form">Admin</button>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #0b0f1a;
+      --panel: #111827;
+      --border: #1f2d45;
+      --accent: #00c2ff;
+      --accent2: #ff6b35;
+      --text: #e8edf5;
+      --muted: #64748b;
+      --input-bg: #0d1420;
+      --error: #ff4d6d;
+      --success: #00e5a0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 194, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 194, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* glowing orbs */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 194, 255, 0.08) 0%, transparent 70%);
+      top: -200px;
+      left: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .login-container {
+      position: relative;
+      z-index: 1;
+      width: 440px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(0, 194, 255, 0.05), 0 40px 80px rgba(0, 0, 0, 0.6);
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* top bar */
+    .brand-bar {
+      background: linear-gradient(135deg, #00c2ff14, #ff6b3510);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), #0066ff);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .brand-bar h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+
+    .brand-bar h1 span {
+      color: var(--accent);
+    }
+
+    .container-body {
+      padding: 2rem;
+    }
+
+    /* tabs */
+    .tab-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      padding: 0.6rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* forms */
+    .form {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form.active {
+      display: flex;
+      animation: fadeIn 0.25s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-group input {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 194, 255, 0.1);
+    }
+
+    .login-btn {
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, var(--accent), #0077ff);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .login-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    /* register link */
+    .register-link {
+      margin-top: 1.25rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .register-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── REGISTRATION DIALOG ───────────────────────── */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .dialog-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .dialog {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 480px;
+      max-width: calc(100vw - 2rem);
+      box-shadow: 0 0 0 1px rgba(0, 194, 255, 0.08), 0 40px 80px rgba(0, 0, 0, 0.7);
+      transform: scale(0.95) translateY(16px);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .dialog-overlay.open .dialog {
+      transform: scale(1) translateY(0);
+    }
+
+    .dialog-header {
+      background: linear-gradient(135deg, rgba(0, 194, 255, 0.1), rgba(255, 107, 53, 0.06));
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .dialog-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dialog-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent2), #ff3366);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .dialog-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+    }
+
+    .dialog-close {
+      width: 32px;
+      height: 32px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .dialog-close:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .dialog-body {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .dialog-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .dialog-footer {
+      padding: 1.25rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn-register {
+      flex: 1;
+      padding: 0.8rem;
+      background: linear-gradient(135deg, var(--accent2), #ff3366);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-register:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-cancel {
+      padding: 0.8rem 1.25rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* success message inside dialog */
+    .dialog-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .dialog-success.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(0, 229, 160, 0.15);
+      border: 2px solid var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .dialog-success h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.05em;
+      color: var(--success);
+    }
+
+    .dialog-success p {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* plan selector */
+    .plan-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .plan-option {
+      display: none;
+    }
+
+    .plan-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.6rem 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      color: var(--muted);
+      transition: all 0.2s;
+      text-align: center;
+      gap: 0.2rem;
+    }
+
+    .plan-label strong {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .plan-option:checked+.plan-label {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0, 194, 255, 0.06);
+    }
+
+    .form-group select {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .form-group select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-group select option {
+      background: var(--panel);
+    }
+
+    /* password strength */
+    .strength-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 999px;
+      margin-top: 0.4rem;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      margin-bottom: -0.25rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── LOGIN CARD ─────────────────────────────────── -->
+  <div class="login-container">
+    <div class="brand-bar">
+      <div class="brand-icon">📡</div>
+      <h1>City<span>Hub</span> ISP</h1>
     </div>
 
-    <!-- Customer Login Form -->
-    <form id="customer-form" class="form active">
-      <div class="form-group">
-        <label for="customer-username">Username</label>
-        <input type="text" id="customer-username" name="username" required>
+    <div class="container-body">
+      <!-- Tab Buttons -->
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-target="customer-form">Customer</button>
+        <button class="tab-btn" data-target="admin-form">Admin</button>
       </div>
-      <div class="form-group">
-        <label for="customer-password">Password</label>
-        <input type="password" id="customer-password" name="password" required>
-      </div>
-      <button type="submit" class="login-btn">Login</button>
-    </form>
 
-    <!-- Admin Login Form -->
-    <form id="admin-form" class="form">
-      <div class="form-group">
-        <label for="admin-username">Admin ID</label>
-        <input type="text" id="admin-username" name="username" required>
-      </div>
-      <div class="form-group">
-        <label for="admin-password">Password</label>
-        <input type="password" id="admin-password" name="password" required>
-      </div>
-      <button type="submit" class="login-btn">Login</button>
-    </form>
+      <!-- Customer Login Form -->
+      <form id="customer-form" class="form active">
+        <div class="form-group">
+          <label for="customer-username">Username</label>
+          <input type="text" id="customer-username" name="username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+          <label for="customer-password">Password</label>
+          <input type="password" id="customer-password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="login-btn">Sign In</button>
+        <div class="register-link">
+          New customer? <a id="open-register">Create an account →</a>
+        </div>
+      </form>
+
+      <!-- Admin Login Form -->
+      <form id="admin-form" class="form">
+        <div class="form-group">
+          <label for="admin-username">Admin ID</label>
+          <input type="text" id="admin-username" name="username" placeholder="Enter admin ID" required>
+        </div>
+        <div class="form-group">
+          <label for="admin-password">Password</label>
+          <input type="password" id="admin-password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="login-btn">Sign In</button>
+      </form>
+    </div>
 
     <div class="footer">
       <p>&copy; 2026 CityHub ISP. All rights reserved.</p>
     </div>
   </div>
 
+  <!-- ── REGISTRATION DIALOG ────────────────────────── -->
+  <div class="dialog-overlay" id="register-overlay">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+
+      <div class="dialog-header">
+        <div class="dialog-header-left">
+          <div class="dialog-icon">🚀</div>
+          <h2 id="dialog-title">Create Account</h2>
+        </div>
+        <button class="dialog-close" id="close-register" aria-label="Close">✕</button>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="register-form">
+        <div class="dialog-body">
+
+          <p class="section-label">Personal Details</p>
+
+          <div class="dialog-row">
+            <div class="form-group">
+              <label for="reg-firstname">First Name</label>
+              <input type="text" id="reg-firstname" placeholder="John" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-lastname">Last Name</label>
+              <input type="text" id="reg-lastname" placeholder="Doe" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email">Email Address</label>
+            <input type="email" id="reg-email" placeholder="john@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-phone">Phone Number</label>
+            <input type="tel" id="reg-phone" placeholder="+234 800 000 0000" required>
+          </div>
+
+          <p class="section-label">Service Plan</p>
+
+          <div class="form-group">
+            <label>Choose a Plan</label>
+            <div class="plan-selector">
+              <input type="radio" name="plan" id="plan-basic" value="basic" class="plan-option" checked>
+              <label for="plan-basic" class="plan-label"><strong>Basic</strong>10 Mbps<span>₦5,000/mo</span></label>
+
+              <input type="radio" name="plan" id="plan-standard" value="standard" class="plan-option">
+              <label for="plan-standard" class="plan-label"><strong>Standard</strong>50
+                Mbps<span>₦12,000/mo</span></label>
+
+              <input type="radio" name="plan" id="plan-pro" value="pro" class="plan-option">
+              <label for="plan-pro" class="plan-label"><strong>Pro</strong>100 Mbps<span>₦20,000/mo</span></label>
+            </div>
+          </div>
+
+          <p class="section-label">Account Security</p>
+
+          <div class="form-group">
+            <label for="reg-username">Username</label>
+            <input type="text" id="reg-username" placeholder="Choose a username" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password">Password</label>
+            <input type="password" id="reg-password" placeholder="Min 8 characters" required>
+            <div class="strength-bar">
+              <div class="strength-fill" id="strength-fill"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-confirm">Confirm Password</label>
+            <input type="password" id="reg-confirm" placeholder="Repeat password" required>
+          </div>
+
+        </div>
+
+        <div class="dialog-footer">
+          <button type="button" class="btn-cancel" id="cancel-register">Cancel</button>
+          <button type="submit" class="btn-register">Create My Account →</button>
+        </div>
+      </form>
+
+      <!-- Success State -->
+      <div class="dialog-success" id="register-success">
+        <div class="success-icon">✓</div>
+        <h3>Account Created!</h3>
+        <p>Welcome to CityHub ISP. You can now log in with your new credentials.</p>
+        <button class="login-btn" id="go-to-login" style="width:100%;margin-top:0.5rem">Go to Login →</button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script>
+    // ── Tab switching ──────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.target).classList.add('active');
+      });
+    });
+
+    // ── Dialog open / close ───────────────────────────
+    const overlay = document.getElementById('register-overlay');
+
+    function openDialog() {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('reg-firstname').focus();
+    }
+
+    function closeDialog() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('open-register').addEventListener('click', openDialog);
+    document.getElementById('close-register').addEventListener('click', closeDialog);
+    document.getElementById('cancel-register').addEventListener('click', closeDialog);
+
+    // close on backdrop click
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeDialog(); });
+
+    // close on Escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDialog(); });
+
+    // ── Password strength ──────────────────────────────
+    document.getElementById('reg-password').addEventListener('input', function () {
+      const val = this.value;
+      const fill = document.getElementById('strength-fill');
+      let strength = 0;
+      if (val.length >= 8) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      const colors = ['#ff4d6d', '#ff6b35', '#f5c518', '#00e5a0'];
+      const widths = ['25%', '50%', '75%', '100%'];
+      fill.style.width = val.length ? widths[strength - 1] || '10%' : '0%';
+      fill.style.background = val.length ? colors[strength - 1] || colors[0] : 'transparent';
+    });
+
+    // ── Registration submit ────────────────────────────
+    document.getElementById('register-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const password = document.getElementById('reg-password').value;
+      const confirm = document.getElementById('reg-confirm').value;
+
+      if (password !== confirm) {
+        document.getElementById('reg-confirm').style.borderColor = 'var(--error)';
+        document.getElementById('reg-confirm').focus();
+        return;
+      }
+
+      document.getElementById('reg-confirm').style.borderColor = '';
+
+      // Hide form, show success
+      this.style.display = 'none';
+      document.querySelector('.dialog-header').style.display = 'none';
+      document.getElementById('register-success').classList.add('show');
+    });
+
+    // ── Go to login after success ──────────────────────
+    document.getElementById('go-to-login').addEventListener('click', () => {
+      // pre-fill username on the login form
+      const username = document.getElementById('reg-username').value;
+      document.getElementById('customer-username').value = username;
+
+      // reset dialog for next time
+      document.getElementById('register-form').reset();
+      document.getElementById('register-form').style.display = '';
+      document.querySelector('.dialog-header').style.display = '';
+      document.getElementById('register-success').classList.remove('show');
+      document.getElementById('strength-fill').style.width = '0%';
+
+      closeDialog();
+    });
+  </script>
 </body>
+
 </html>
