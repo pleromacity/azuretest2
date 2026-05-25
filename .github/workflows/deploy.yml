@@ -74,4 +74,3 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://cityhub-isp.azurewebsites.net)
           echo "Production returned HTTP $STATUS"
           [ "$STATUS" = "200" ] && echo "Production live" || (echo "Production check failed" && exit 1)
-'@)
